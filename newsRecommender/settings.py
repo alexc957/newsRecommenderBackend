@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'articles',
     'users',
     "collector",
+    "recommendations"
     
 ]
 
