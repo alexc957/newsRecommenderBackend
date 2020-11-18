@@ -75,9 +75,50 @@ class Query(graphene.ObjectType):
 
 
 
-#class AddArticle(graphene.Mutation):
- #   pass
+class AddArticle(graphene.Mutation):
+    id = graphene.Int()
+    title = graphene.String()
+    summary = graphene.String()
+    lang = graphene.String()
+    category = graphene.String()
+    date_uploaded = graphene.Date()
+    text_vector = graphene.String()
+
+    class Arguments:
+        title = graphene.String()
+        summary = graphene.String()
+        lang = graphene.String(required=False)
+        category = graphene.String(required=False)
+        text_vector = graphene.String(required=False)
+
+    def mutate(self, info, title, summary, lang=None, category=None, text_vector=None):
+        # if not text_vector:
+        #text_vector = ';'.join(nlp(summary).vector.astype(str))
+
+        article = Article(
+            title=title,
+            summary=summary,
+            lang=lang,
+            category=category,
+            text_vector=text_vector
+        )
+
+        article.save()
+
+        return AddArticle(
+            id=article.id,
+            title=article.title,
+            summary=article.summary,
+            lang=article.lang,
+            category=article.category,
+            date_uploaded=article.date_uploaded,
+            text_vector=article.text_vector
+
+
+        )
 
 
 
 
+class Mutation(graphene.ObjectType):
+    add_article = AddArticle.Field()
