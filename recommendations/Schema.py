@@ -38,7 +38,7 @@ class Query(graphene.ObjectType):
             raise Exception("Bad ID provided")
         related_articles = SimilarArticle.objects.filter(principal_article=article).order_by('-score')
 
-        return similar_articles[:10]
+        return related_articles[:10]
 
     def resolve_recommendations(self, info, **kwargs):
         user = info.context.user
@@ -48,4 +48,4 @@ class Query(graphene.ObjectType):
 
         recomender.generate_recommendations(user)
         recs = Recommendation.objects.filter(user=user).order_by('-score')
-        return score
+        return recs

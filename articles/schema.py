@@ -3,6 +3,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import Article, SimilarArticle
 from django.db.models import Q
+from django.db.models import Count
 
 
 class ArticleType(DjangoObjectType):
@@ -33,10 +34,14 @@ class Query(graphene.ObjectType):
         ArticleType,
         article_id=graphene.Int(required=True)
     )
+    recent_articles = graphene.List(ArticleType)
+    most_voted = graphene.List(ArticleType)
+    total_pages = graphene.Int()
 
     def resolve_total_pages(self, info, **kwargs):
-        raise Exception("Not implemented yet")
-
+        all_articles =Article.objects.all()
+        total_pages = math.ceil(len(all_articles)/10)
+        return total_pages
 
     def resolve_articles(self,info,search=None,first=None,skip=None,**kwargs):
         qs = Article.objects.all() # qs: query selector 
@@ -70,7 +75,9 @@ class Query(graphene.ObjectType):
 
 
     def resolve_most_voted(self,info, **kwargs):
-        raise Exception("not implemented yet")
+        votes = Article.objects.annotate(num_votes=Count('vote'));
+        return votes.order_by('-num_votes')[:10]
+        
 
 
 
