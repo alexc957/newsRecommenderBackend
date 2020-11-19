@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "D:\\Projects\\djngo-graphql\\venvv\\Scripts\\python.exe"
+    "python.pythonPath": "D:\\Projects\\djngo-graphql\\venvv\\Scripts\\python.exe",
+    "git.ignoreLimitWarning": true
 }
