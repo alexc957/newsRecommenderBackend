@@ -40,19 +40,37 @@ INSTALLED_APPS = [
     'graphene_django',
     'articles',
     'users',
-    "collector"
+    "collector",
+    "recommendations",
+    'corsheaders',
+    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    
 ]
+
+#CORS_ALLOWED_ORIGINS = [
+ #   "http://localhost:3000",
+ #   "http://localhost:8080",
+ #   "http://127.0.0.1:3000"
+
+#]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = False
 
 ROOT_URLCONF = 'newsRecommender.urls'
 
@@ -104,16 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-GRAPHENE = {
-    'SCHEMA': 'newsRecommender.schema.schema',
-     'MIDDLEWARES': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
-    ],
-}
-AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]
 
 
 # Internationalization
@@ -134,3 +142,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+GRAPHENE = {
+    'SCHEMA': 'newsRecommender.schema.schema',
+    
+}
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
