@@ -4,6 +4,7 @@ from collector.models import Vote
 from articles.models import Article, SimilarArticle
 from .models import Recommendation
 import time 
+import numpy as np
 
 import random
 
@@ -14,6 +15,7 @@ class Recommender:
         
 
     def cosine_similarity_score(self,x,y):
+        """ calcula el coseno de la similitud tomando en cuenta que puede recibir un vector nulo """
         y = np.array(y.split(';')).astype(float)
         x = np.array(x.split(';')).astype(float)
         # print(y.shape)
@@ -30,25 +32,33 @@ class Recommender:
 
 
     def find_similars_articles_in_all_articles(self):
+        """Encuentra similitudes entre articulos, es decir crea la relacion entre articulos similares"""
         all_articles = Article.objects.all()
+        all_articles = list(all_articles)
         t0 = time.time()
         length = len(all_articles)
+        random.shuffle(all_articles)
         for idx in range(0, length):
             print(f"processing {idx+1} of {length} ")
+            random.shuffle(all_articles)
+            top_ten_recs = 0
             for article_a in all_articles:
-                if all_articles[idx] != article_a.id:
-                    sim_score = self.cosine_similarity_score(
+                if all_articles[idx].id != article_a.id: #evitar relacionar el mismo articulo 
+                    sim_score = self.cosine_similarity_score(  # calcular el score de similitud 
                         all_articles[idx].text_vector, article_a.text_vector)
-                    similar_article = SimilarArticle.objects.filter(
+                    similar_article = SimilarArticle.objects.filter( # consultar si la ya la relacion 
                         principal_article=all_articles[idx], related_article=article_a).first()
 
-                    if sim_score > self.threshold and not similar_article:
+                    if sim_score > self.threshold and not similar_article: # relacionar articulos similares 
                         #print("creating similar article")
+                        top_ten_recs+=1
                         SimilarArticle.objects.create(
                             principal_article=all_articles[idx],
                             related_article=article_a,
-                            score=similar_article,
+                            score=sim_score,
                         )
+                    if top_ten_recs>9: # evitar crear mas de 10 artículos similares 
+                        break
         print("done")
         print(f'total time: {(time.time() - t0)/60} minutes')
 

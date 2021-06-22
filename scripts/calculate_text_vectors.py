@@ -1,3 +1,4 @@
+from re import search
 import pandas as pd 
 from glob import glob
 import json 
@@ -7,7 +8,7 @@ import os
 from pathlib import Path
 spacy_model = es_core_news_md.load()
 
-data_path = "D:/Projects/djngo-graphql/Spanish news dataset sample/news*"  # path to the news store in json files 
+data_path = "D:/Projects/graphql/Spanish news dataset sample/news*"  # path to the news store in json files 
 
 filenames = glob(data_path)
 print(len(filenames))
@@ -39,19 +40,20 @@ def search_news(search="trump", num_items=300, category="politica"):
         with open(filename, encoding='utf8') as file:
             data = json.load(file)
             if(search in data.get("text").lower()):
-                processed_text = process_text(data.get('text'))
+               # processed_text = process_text(data.get('text'))
                 data_df.append(
                     {
                         "uuid":data.get("uuid"),
                         "title": data.get("title"),
                         "text": data.get("text"),
-                        "text_vector": ";".join(spacy_model(processed_text).vector.astype(str)),
+                        "text_vector": ";".join(spacy_model(data.get('text')).vector.astype(str)),
                         "category" : category
                         
                     }
                 ) 
         if len(data_df)==num_items:
             break
+    print('done')
     return data_df 
 
 # obtener y generar un datagrame de noticas de Donald Trump 
@@ -67,13 +69,27 @@ deportes_df = pd.DataFrame(deportes_data)
 futbol_data = search_news(search="futbol", category = "deportes")
 futbol_df = pd.DataFrame(futbol_data)
 
+
+
 # de putin/rusia 
 putin_data = search_news(search="putin", category="politica")
 putin_df = pd.DataFrame(putin_data)
-# concatenar los resultados 
-news_df = pd.concat([trump_df, deportes_df,futbol_df, putin_df])
 
+
+correa_data = pd.DataFrame( search_news(search="correa", category='politica'))
+data =   pd.DataFrame(search_news(search="politica", category='politica'))
+data1 = pd.DataFrame(search_news(search="clinton",category="politica"))
+data2 = pd.DataFrame(search_news(search="obama", category="politica"))
+
+data3 = pd.DataFrame( search_news(search='baloncesto',category='deportes') )
+data4 = pd.DataFrame( search_news(search='farc',category='politica'))
+data5 = pd.DataFrame( search_news(search='uribe',category='politica') )
+data6 = pd.DataFrame( search_news(search='messi',category='deportes') )
+data7 = pd.DataFrame( search_news(search='ronaldo',category='deportes') )
+# concatenar los resultados 
+news_df = pd.concat([trump_df, deportes_df,futbol_df, putin_df, correa_data,data,data1,data2, data3,data4, data5,data6,data7],ignore_index=True)
+print(news_df.shape)
 # eliminar duplicados 
 news_df = news_df.drop_duplicates(subset=['uuid','title'], keep='first')
 # guardar los resultados 
-news_df.to_csv("NoticiasConVectores.csv")
+news_df.to_csv("NoticiasConVectoresV4.csv")

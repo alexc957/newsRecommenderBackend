@@ -23,21 +23,22 @@ def save_elcomercio_news():
     #model = spacy.load('es_core_news_md')
 
     elcomercio_df = pd.read_excel('scripts/corpus_elcomercio.xlsx') 
-    for index, row in elcomercio_df[:300].iterrows():
-        processed_text = process_text(row['Texto'])
+    for index, row in elcomercio_df.iterrows():
+        #processed_text = process_text(row['Texto'])
         Article.objects.create(
             title = row['Noticia'],
             summary = row['Texto'],
             category = "COVID19",
             date_uploaded = row['Fecha'].date(),
-            text_vector = ';'.join(spacy_model(processed_text).vector.astype(str))
+            text_vector = ';'.join(spacy_model(row['Texto']).vector.astype(str))
         )
     print('Done')
 
 
 def save_news_to_db():
     # guarda los articulos generados en calculate_text_vectors.py en la base 
-    df = pd.read_csv('scripts/NoticiasConVectores.csv')
+    df = pd.read_csv('scripts/NoticiasConVectoresV4.csv')
+    print(df.shape)
     for index,row in df.iterrows():
         Article.objects.create(
             title = row['title'],
@@ -47,3 +48,8 @@ def save_news_to_db():
         )
 
     print("done")
+
+
+#%% 
+
+# %%
