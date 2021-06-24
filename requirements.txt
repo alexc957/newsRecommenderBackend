@@ -16,7 +16,6 @@ django-extensions==2.2.9
 django-filter==2.0.0
 django-graphql-jwt==0.1.5
 django-heroku==0.3.1
-es-core-news-md==3.0.0
 et-xmlfile==1.1.0
 graphene==2.1.8
 graphene-django==2.2.0

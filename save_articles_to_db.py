@@ -37,7 +37,7 @@ def save_elcomercio_news():
 
 def save_news_to_db():
     # guarda los articulos generados en calculate_text_vectors.py en la base 
-    df = pd.read_csv('scripts/NoticiasConVectoresV4.csv')
+    df = pd.read_csv('scripts/NoticiasConVectores.csv')
     print(df.shape)
     for index,row in df.iterrows():
         Article.objects.create(
